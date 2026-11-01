@@ -1,0 +1,2 @@
+nextstrain-cli
+# Other packages needed

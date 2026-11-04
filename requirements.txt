@@ -1,2 +1,8 @@
+# Data download:
 nextstrain-cli
-# Other packages needed
+
+# nextstrain_proprocess.py
+None
+
+# mutation_graph.py
+networkx

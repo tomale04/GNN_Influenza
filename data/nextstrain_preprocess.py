@@ -1,8 +1,6 @@
-# File for processing and storing the nextstrain data
-
 """
 nextstrain_preprocess.py
-=========================
+========================
  
 Flag nodes in a Nextstrain phylogeny that look low quality or may have data 
 problems. Note that this script will not make any changes to the actual data.

@@ -1,4 +1,10 @@
-# This file will contain the code to construct the mutation graph using the processed data.
+"""
+mutation_graph.py
+=================
+
+Description to come...
+"""
+
 import networkx as nx
 import json
 import csv

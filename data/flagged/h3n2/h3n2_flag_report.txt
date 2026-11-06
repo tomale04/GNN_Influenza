@@ -10,17 +10,17 @@ flag                                 tips  internal   description
 flag_duplicate_name                     0         0   Node name appears more than once in the tree.
 flag_qc_bad                             2         0   Tip has Nextclade QC overall status 'bad'.
 flag_qc_mediocre                        2         0   Tip has Nextclade QC overall status 'mediocre'.
-flag_qc_missing                         0         0   Tip QC status is missing or not one of good/mediocre/bad.
-flag_missing_attribute                633         0   A required attribute is absent (see 'notes' column).
-flag_placeholder_value                 10         0   A tip categorical attribute holds a placeholder such as 'unassigned'/'unknown'.
-flag_invalid_numeric                    0         0   A numeric attribute is present but not a finite number.
-flag_negative_value                    34         7   A non-negative attribute (div, lbi, ha_muts, ...) is negative.
-flag_ha1_gt_ha_muts                     0         0   ha1_muts is greater than ha_muts (inconsistent).
-flag_date_out_of_range                 26         0   Tip date lies outside the frequency pivot range (+/- margin).
-flag_imprecise_date                    18         0   Tip date has a wide confidence interval (likely an imprecise/imputed date).
-flag_date_before_parent                 0         0   Node is dated earlier than its parent (beyond tolerance).
-flag_div_decreasing                     0         0   Divergence decreases from parent to child (negative branch length).
-flag_long_branch                       13         4   Branch length is an outlier (Tukey fence on positive branch lengths).
+flag_qc_missing                         0         0   Tip QC status is missing, or not one of good/mediocre/bad.
+flag_missing_attribute                655         7   A required attribute is missing.
+flag_placeholder_value                 10         0   A tip categorical attribute holds a placeholder (such as 'unassigned'/'unknown').
+flag_invalid_numeric                    0         0   A numeric attribute is present but not a valid number.
+flag_negative_value                     0         0   A non-negative attribute (div, lbi, ha_muts, ...) is negative.
+flag_ha1_gt_ha_muts                     0         0   ha1_muts is greater than ha_muts (this shouldn't ever happen).
+flag_date_out_of_range                 26         0   Tip date lies outside the frequency pivot range.
+flag_imprecise_date                    18         0   Tip date has a wide confidence interval.
+flag_date_before_parent                 0         0   Node is dated earlier than its parent.
+flag_div_decreasing                     0         0   Divergence decreases from parent to child (i.e. negative branch length).
+flag_long_branch                       13         4   Branch length is an outlier.
 flag_ambiguous_mutation                 4         0   Branch carries a mutation to/from an ambiguity code, gap, or stop codon.
 flag_region_country_conflict            0         0   Tip region disagrees with the majority region of its country.
 flag_no_frequency_entry                 0         0   Tip is in the tree but has no entry in the tip-frequency file.

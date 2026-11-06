@@ -49,14 +49,14 @@ from pathlib import Path
 # CONSTANTS
 # --------------------------------------------------------------------------- #
  
-# Strings treated as NA.
+# Strings that we will treat as missing data.
 PLACEHOLDERS = {"", "unassigned", "unknown", "na", "n/a", "none", "?", "undefined"}
  
 TIP_CATEGORICAL_ATTRS = ["region", "country", "division", "clade_membership", "subclade"]
 NUMERIC_ATTRS = ["div", "num_date", "lbi", "ha_muts", "ha1_muts", "ep", "glyc"]
 NON_NEGATIVE_ATTRS = ["div", "lbi", "ha_muts", "ha1_muts", "ep", "glyc"]
  
-# Ambiguities in amino acid or nucleotides.
+# Strings that represent ambiguities in amino acid or nucleotides.
 AMBIGUOUS_AA = set("X-*")
 AMBIGUOUS_NUC = set("NRYKMSWBDHV-")
 
@@ -64,24 +64,23 @@ FLAG_DESCRIPTIONS = {
     "flag_duplicate_name": "Node name appears more than once in the tree.",
     "flag_qc_bad": "Tip has Nextclade QC overall status 'bad'.",
     "flag_qc_mediocre": "Tip has Nextclade QC overall status 'mediocre'.",
-    "flag_qc_missing": "Tip QC status is missing or not one of good/mediocre/bad.",
-    "flag_missing_attribute": "A required attribute is absent (see 'notes' column).",
-    "flag_placeholder_value": "A tip categorical attribute holds a placeholder such as 'unassigned'/'unknown'.",
-    "flag_invalid_numeric": "A numeric attribute is present but not a finite number.",
+    "flag_qc_missing": "Tip QC status is missing, or not one of good/mediocre/bad.",
+    "flag_missing_attribute": "A required attribute is missing.",
+    "flag_placeholder_value": "A tip categorical attribute holds a placeholder (such as 'unassigned'/'unknown').",
+    "flag_invalid_numeric": "A numeric attribute is present but not a valid number.",
     "flag_negative_value": "A non-negative attribute (div, lbi, ha_muts, ...) is negative.",
-    "flag_ha1_gt_ha_muts": "ha1_muts is greater than ha_muts (inconsistent).",
-    "flag_date_out_of_range": "Tip date lies outside the frequency pivot range (+/- margin).",
-    "flag_imprecise_date": "Tip date has a wide confidence interval (likely an imprecise/imputed date).",
-    "flag_date_before_parent": "Node is dated earlier than its parent (beyond tolerance).",
-    "flag_div_decreasing": "Divergence decreases from parent to child (negative branch length).",
-    "flag_long_branch": "Branch length is an outlier (Tukey fence on positive branch lengths).",
+    "flag_ha1_gt_ha_muts": "ha1_muts is greater than ha_muts (this shouldn't ever happen).",
+    "flag_date_out_of_range": "Tip date lies outside the frequency pivot range.",
+    "flag_imprecise_date": "Tip date has a wide confidence interval.",
+    "flag_date_before_parent": "Node is dated earlier than its parent.",
+    "flag_div_decreasing": "Divergence decreases from parent to child (i.e. negative branch length).",
+    "flag_long_branch": "Branch length is an outlier.",
     "flag_ambiguous_mutation": "Branch carries a mutation to/from an ambiguity code, gap, or stop codon.",
     "flag_region_country_conflict": "Tip region disagrees with the majority region of its country.",
     "flag_no_frequency_entry": "Tip is in the tree but has no entry in the tip-frequency file.",
     "flag_bad_frequency": "Tip frequencies have wrong length, NaN/inf, or values outside [0, 1].",
 }
 FLAG_NAMES = list(FLAG_DESCRIPTIONS.keys())
- 
  
 # --------------------------------------------------------------------------- #
 # HELPER FUNCTIONS
@@ -90,7 +89,7 @@ FLAG_NAMES = list(FLAG_DESCRIPTIONS.keys())
 def is_number(x):
     return isinstance(x, (int, float)) and not isinstance(x, bool) and math.isfinite(x)
  
- 
+
 def is_placeholder(x):
     return isinstance(x, str) and x.strip().lower() in PLACEHOLDERS
  
@@ -251,17 +250,27 @@ def check_valid_numeric(records):
     for r in records:
         for attr in NUMERIC_ATTRS:
             v = r[attr]
+
             if v is None:
                 continue
+
             if not is_number(v):
                 r["flags"]["flag_invalid_numeric"] = True
                 r["notes"].append(f"invalid_numeric:{attr}={v!r}")
+
+            elif attr == "glyc" and v == -1:
+                r["flags"]["flag_missing_attribute"] = True
+                r["notes"].append("missing:glyc")
+
             elif attr in NON_NEGATIVE_ATTRS and v < 0:
                 r["flags"]["flag_negative_value"] = True
                 r["notes"].append(f"negative:{attr}={v}")
+
         if is_number(r["ha1_muts"]) and is_number(r["ha_muts"]) and r["ha1_muts"] > r["ha_muts"]:
             r["flags"]["flag_ha1_gt_ha_muts"] = True
-            r["notes"].append(f"ha1_muts({r['ha1_muts']})>ha_muts({r['ha_muts']})")
+            r["notes"].append(
+                f"ha1_muts({r['ha1_muts']})>ha_muts({r['ha_muts']})"
+            )
  
  
 def check_dates(records, pivots, date_margin, max_ci_width, parent_tol):

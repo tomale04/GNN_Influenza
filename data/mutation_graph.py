@@ -18,7 +18,7 @@ from copy import deepcopy
 # Chose these flags based on completeness and what seems important.
 FLAGS = [
     "flag_qc_bad", "flag_qc_mediocre", 
-    "flag_negative_value", "flag_data_out_of_range",
+    "flag_negative_value", "flag_date_out_of_range",
     "flag_bad_frequency"
     ]
 
@@ -32,24 +32,35 @@ class MutationGraph():
 
     === Attributes ===
         self.inFile = Path to raw phylogenetic tree.
+
         self.outFile = Path specifying location to store the mutation graph.
+
         self.flagFile = Path to node and edge quality flags.
+
         self.node_flags = The flag file in a nice format (a list of dicts).
+
         phylo_tree = A NetworkX graph object representing the raw
         phylogenetic tree from inFile.
         pruned_phyle_tree = The phylogenetic tree which has been pruned
         based on data quality.
+
         mutation_graph = The mutation graph constructed by collapsing
         zero-mutation edges in the pruned phylogenetic tree.
     """
-    def __init__(self, inFile, outFile, flagFile, rootFile):
+    def __init__(self, inFile, outFile, flagFile, rootFile, gene_segments):
         """
         Inputs:
             inFile = Path to raw phylogenetic tree.
+
             outFile = Path specifying location to store the mutation graph.
+
             flagFile = Path to node and edge quality flags.
+
             rootFile = Path too file containing sequence information about
             the root node.
+            
+            gene_segments = List containing the sequence regions in which
+            mutations will be counted.
         
         Returns:
             None
@@ -58,6 +69,7 @@ class MutationGraph():
         self.outFile = Path(outFile)
         self.flagFile = Path(flagFile)
         self.rootFile = Path(rootFile)
+        self.gene_segments = gene_segments
 
         self.node_flags = None
 
@@ -67,6 +79,10 @@ class MutationGraph():
         self.ref_sequence = None
 
         self.mutation_graph = None
+
+
+        # For testing, REMOVE AFTER!
+        self.zero_mutation_edges = None
 
         return
 
@@ -97,7 +113,10 @@ class MutationGraph():
             G=self.phylo_tree
         )
 
-        self.mutation_graph = self._collapse_edges()
+        self.mutation_graph = self._collapse_edges(
+            G=self.pruned_phylo_tree
+        )
+
         self._assign_node_features()
         self._assign_edge_features()
 
@@ -302,10 +321,10 @@ class MutationGraph():
                 stack.append((child, [edge_attrs], []))
 
                 while stack:
-                    current, path_attributes, contracted_nodes = stack.pop()
+                    current, path_attributes, pruned_nodes = stack.pop()
 
-                    # If this node should be pruned, we still need to check that
-                    # its descendants do not need to be pruned. 
+                    # If this node should be pruned, we still need to check if
+                    # its descendants need to be pruned. 
                     if current in nodes_to_prune:
                         for child in reversed(list(G.successors(current))):
                             edge_attrs = deepcopy(G.edges[current, child])
@@ -313,15 +332,17 @@ class MutationGraph():
                             stack.append((
                                 child,
                                 path_attributes + [edge_attrs],
-                                contracted_nodes + [current]
+                                pruned_nodes + [current]
                             ))
 
                     else:
                         H.add_edge(
                             ancestor,
                             current,
-                            path_attributes=path_attributes,
-                            contracted_nodes=contracted_nodes
+                            attributes={
+                                'mutations': self._concatenate_mutations(path_attributes)
+                            },
+                            pruned_nodes=pruned_nodes
                         )
 
         self.pruned_phylo_tree = H
@@ -344,23 +365,203 @@ class MutationGraph():
             if any(attrs["quality_flags"].get(flag, False)
                 for flag in FLAGS)
         }
+
+    def _concatenate_mutations(self, path_attributes):
+        """
+        Upon pruning a node, update the specified mutation annotations along
+        the resulting branch by concatenating the mutations into the pruned
+        node with the mutations from the pruned node to its child.
+        """
+
+        aggregated = {}
+
+        for edge_attrs in path_attributes:
+            mutations = edge_attrs.get('attributes', {}).get('mutations', {})
+
+            for seq_type, seq_mutations in mutations.items():
+                if seq_type not in aggregated:
+                    aggregated[seq_type] = []
+
+                aggregated[seq_type] += seq_mutations
+
+        return aggregated
         
-    def _collapse_edges(self):
+    def _collapse_edges(self, G):
         """
-        Collapse zero-mutation edges.
+        Collapse zero-mutation edges based on mutations in <gene_seqments>.
+
+        Inputs:
+            G = The phylogenetic tree.
+
+            gene_seqments = List containing the sequence regions in which
+            mutations will be counted.
+
+        Returns:
+            phylo_tree_edge_collapsed = The phylogenetic tree after edges
+            have been collapsed.
         """
+
+        zero_mutation_edges = self._get_zero_mutation_edges(
+            G=G,
+            gene_segments=self.gene_segments
+        )
+
+        self.zero_mutation_edges = zero_mutation_edges
+
+        print(f'Edges with no mutations in {self.gene_segments}:\n')
+        print(zero_mutation_edges)
+
+        roots = [node for node, degree in G.in_degree() if degree == 0]
+        root = roots[0]
+
+        # Make a copy of G
+        H = nx.DiGraph()
+        H.graph.update(deepcopy(G.graph))
+
+        H.add_node(root, **deepcopy(G.nodes[root]))
+
+        self._traverse_and_collapse(
+            G=G, H=H, 
+            original_node=root, 
+            collapsed_node=root, 
+            zero_mutation_edges=zero_mutation_edges,
+            path_attributes=[]
+        )
+        return H
+
+    def _get_zero_mutation_edges(self, G, gene_segments):
+        """
+        Returns a list of edges along which there are no mutations in
+        <gene_segments>.
+
+        Inputs:
+            G = The phylogenetic tree.
+
+            gene_segments = List containing the sequence regions in which
+            mutations will be counted.
+
+        Returns:
+            zero_mutation_edges = A set of edges along which there 
+            are no mutations in <gene_segments>.
+        """
+
+        zero_mutation_edges = set()
+
+        print(G.edges(data=True))
+        for parent, child, edge_data in G.edges(data=True):
+            edge = (parent, child)
+            no_mutations = True
+            mut_segments = edge_data['attributes']['mutations'].keys()
+
+            for segment in gene_segments:
+                if segment in mut_segments:
+                    no_mutations = False
+
+            if no_mutations:
+                zero_mutation_edges.add(edge)
+
+        return zero_mutation_edges
+
+    def _traverse_and_collapse(
+            self, G, H, original_node, collapsed_node, 
+            zero_mutation_edges, path_attributes=None
+    ):
+        """
+        Recursively traverse G and build H by contracting zero-mutation edges.
+
+        Inputs:
+            G = Original phylogenetic tree being traversed.
+
+            H = New graph being constructed.
+
+            original_node = Current node in G being visited.
+
+            collapsed_node = Node in H to which descendants are attached. If
+            original_node was reached through a zero-mutation path, collapsed_node
+            points to the "oldest" ancestor along this path.
+
+            zero_mutation_edges = List of edges along which there are no
+            specified mutations
+
+        """
+
+        if path_attributes is None:
+            path_attributes = []
+        
+        for child in G.successors(original_node):
+
+            edge_attrs = deepcopy(G.edges[original_node, child])
+
+            if (original_node, child) in zero_mutation_edges:
+
+                aggregated = self._aggregate_features(
+                    H.nodes[collapsed_node],
+                    G.nodes[child]
+                )
+                H.nodes[collapsed_node].update(aggregated)
+
+                self._traverse_and_collapse(
+                    G, H, child, collapsed_node, 
+                    zero_mutation_edges,
+                    path_attributes + [edge_attrs]
+                )
+
+            else:
+                H.add_node(child, **deepcopy(G.nodes[child]))
+
+                accumulated_mutations = self._concatenate_mutations(
+                    path_attributes=path_attributes + [edge_attrs]
+                )
+
+                H.add_edge(
+                    collapsed_node,
+                    child,
+                    attributes={'mutations': accumulated_mutations},
+                    contracted_nodes=[]
+                )
+
+                self._traverse_and_collapse(
+                    G, H, child, child,
+                    zero_mutation_edges
+                )
+        
         return
+
+    def _aggregate_features(self, feat1, feat2):
+        """
+        Upon collapsing an edge, aggreggate the features of the two nodes.
+
+        Inputs:
+            feat1 = The first node's attributes.
+
+            feat2 = The second node's attributes.
+        
+        Returns:
+            feat_agg = The first and second nodes' features, aggregated.
+        """
+
+        # TODO: Implement this method.
+        
+        feat_agg = feat1
+
+        return feat_agg
 
     def _assign_node_features(self):
         """
-        Assign node features to each node in the graph.
+        Assign node features to each node in the mutation graph.
         """
+
+        # TODO: Implement this method.
+
         return
 
     def _assign_edge_features(self):
         """
         Assign edge features to each edge in the graph.
         """
+
+        # TODO: Implement this method.
+
         return
 
     # Any sort of validation we could do?
@@ -369,5 +570,8 @@ class MutationGraph():
         """
         Store the mutation graph at the specified location.
         """
+
+        # TODO: Implement this method.
+
         return
         

@@ -1,5 +1,5 @@
 """
-mutation_graph.py
+mutation_tree.py
 =================
 
 Description to come...
@@ -18,41 +18,63 @@ from copy import deepcopy
 # Chose these flags based on completeness and what seems important.
 FLAGS = [
     "flag_qc_bad", "flag_qc_mediocre", 
-    "flag_negative_value", "flag_date_out_of_range",
-    "flag_bad_frequency"
+    "flag_negative_value", "flag_bad_frequency"
     ]
 
 COLLAPSE = {
     "ha_muts": 0,
 }
 
-class MutationGraph():
+class MutationTree():
     """
-    A mutation graph object. Stored as a NetworkX graph.
+    A mutation tree object. Stored as a NetworkX tree.
 
     === Attributes ===
-        self.inFile = Path to raw phylogenetic tree.
+        cutoff_date = Date representing the forecast origin/data cutoff.
+        In the format 'YYYY-MM-DD'.
+        
+        self.inFile = Path to raw phylogenetic tree (the Nextstrain Auspice 
+        JSON file).
 
-        self.outFile = Path specifying location to store the mutation graph.
+        self.outFile = Path specifying location to store the mutation tree.
 
         self.flagFile = Path to node and edge quality flags.
 
         self.node_flags = The flag file in a nice format (a list of dicts).
 
-        phylo_tree = A NetworkX graph object representing the raw
+        self.phylo_tree = A NetworkX tree object representing the raw
         phylogenetic tree from inFile.
-        pruned_phyle_tree = The phylogenetic tree which has been pruned
+
+        self.pruned_phyle_tree = The phylogenetic tree which has been pruned
         based on data quality.
 
-        mutation_graph = The mutation graph constructed by collapsing
+        self.mutation_tree = The mutation tree constructed by collapsing
         zero-mutation edges in the pruned phylogenetic tree.
+
+        self.zero_mutation_edges = The collection of edges along which there
+        are no mutations.
+
+        self.collapsed_node_members = A dictionary where the keys are the nodes 
+        in the pruned phylogenetic tree. The value at a given node is the set of
+        nodes which were collapsed into it upon collapsing zero-mutation edges.
+
+        gene_segments = List containing the sequence regions in which mutations 
+        will be counted. Edges will be collapsed based on these segments.
+
+        self.sequence_segments = Segments of the amino acid or nucleotide
+        sequence to be included as node features in the mutation tree.
     """
-    def __init__(self, inFile, outFile, flagFile, rootFile, gene_segments):
+    def __init__(self, cutoff_date, inFile, outFile, 
+                flagFile, rootFile, gene_segments,
+                sequence_segments=('HA1', 'HA2')):
         """
         Inputs:
+            cutoff_date = Date representing the forecast origin/data cutoff.
+            In the format 'YYYY-MM-DD'.
+
             inFile = Path to raw phylogenetic tree.
 
-            outFile = Path specifying location to store the mutation graph.
+            outFile = Path specifying location to store the mutation tree.
 
             flagFile = Path to node and edge quality flags.
 
@@ -61,15 +83,25 @@ class MutationGraph():
             
             gene_segments = List containing the sequence regions in which
             mutations will be counted.
+
+            sequence_segments = Segments of the amino acid or nucleotide
+            sequence to be included as node features in the mutation tree.
+
+            self.sampled_tip_ids = The IDs of the sampled tips.
         
         Returns:
             None
         """
+
+        self.cutoff_date = cutoff_date
+
         self.inFile = Path(inFile)
         self.outFile = Path(outFile)
         self.flagFile = Path(flagFile)
         self.rootFile = Path(rootFile)
+
         self.gene_segments = gene_segments
+        self.sequence_segments = sequence_segments
 
         self.node_flags = None
 
@@ -78,24 +110,27 @@ class MutationGraph():
 
         self.ref_sequence = None
 
-        self.mutation_graph = None
+        self.mutation_tree = None
 
-
-        # For testing, REMOVE AFTER!
         self.zero_mutation_edges = None
+        self.collapsed_node_members = {}
+
+        self.sampled_tip_ids = None
 
         return
 
     def construct(self):
         """
-        Construct the actual mutation graph. This method should initialize
-        self.phylo_tree, self.mutation_graph, and self.node_flags.
+        Construct the actual mutation tree. This method should initialize
+        self.phylo_tree, self.mutation_tree, and self.node_flags.
         """
 
         # Construct the initial phylogenetic tree and add the node flags.
         tree_json = self._load_json(self.inFile)
         self.node_flags = self._load_flags(self.flagFile)
         self.phylo_tree = self._construct_phylo_tree(tree_json)
+
+        self._identify_sampled_tips(self.phylo_tree)
 
         # Add sequences as individual node attributes.
         roots = [node for node, degree in self.phylo_tree.in_degree() if degree == 0]
@@ -113,7 +148,7 @@ class MutationGraph():
             G=self.phylo_tree
         )
 
-        self.mutation_graph = self._collapse_edges(
+        self.mutation_tree = self._collapse_edges(
             G=self.pruned_phylo_tree
         )
 
@@ -214,6 +249,20 @@ class MutationGraph():
                 stack.append((children[i], node_id, child_id))
 
         return G
+
+    def _identify_sampled_tips(self, G):
+        """
+        Identify and store the terminal nodes of the original phylogenetic tree.
+
+        Inputs:
+            G: Original, unpruned phylogenetic tree.
+        """
+
+        self.sampled_tip_ids = {
+            node
+            for node in G.nodes
+            if G.out_degree(node) == 0
+        }
 
     def _reconstruct_sequences(self, G, root, root_sequence):
         """
@@ -408,9 +457,6 @@ class MutationGraph():
 
         self.zero_mutation_edges = zero_mutation_edges
 
-        print(f'Edges with no mutations in {self.gene_segments}:\n')
-        print(zero_mutation_edges)
-
         roots = [node for node, degree in G.in_degree() if degree == 0]
         root = roots[0]
 
@@ -418,7 +464,8 @@ class MutationGraph():
         H = nx.DiGraph()
         H.graph.update(deepcopy(G.graph))
 
-        H.add_node(root, **deepcopy(G.nodes[root]))
+        H.add_node(root)
+        self.collapsed_node_members = {root: [root]}
 
         self._traverse_and_collapse(
             G=G, H=H, 
@@ -427,6 +474,9 @@ class MutationGraph():
             zero_mutation_edges=zero_mutation_edges,
             path_attributes=[]
         )
+
+        self._aggregate_node_features(G, H)
+
         return H
 
     def _get_zero_mutation_edges(self, G, gene_segments):
@@ -450,12 +500,15 @@ class MutationGraph():
         print(G.edges(data=True))
         for parent, child, edge_data in G.edges(data=True):
             edge = (parent, child)
-            no_mutations = True
-            mut_segments = edge_data['attributes']['mutations'].keys()
 
-            for segment in gene_segments:
-                if segment in mut_segments:
-                    no_mutations = False
+            mutations = edge_data.get(
+                'attributes', {}
+            ).get('mutations', {})
+            
+            no_mutations = not any(
+                mutations.get(segment, [])
+                for segment in gene_segments
+            )
 
             if no_mutations:
                 zero_mutation_edges.add(edge)
@@ -472,7 +525,7 @@ class MutationGraph():
         Inputs:
             G = Original phylogenetic tree being traversed.
 
-            H = New graph being constructed.
+            H = New tree being constructed.
 
             original_node = Current node in G being visited.
 
@@ -494,11 +547,7 @@ class MutationGraph():
 
             if (original_node, child) in zero_mutation_edges:
 
-                aggregated = self._aggregate_features(
-                    H.nodes[collapsed_node],
-                    G.nodes[child]
-                )
-                H.nodes[collapsed_node].update(aggregated)
+                self.collapsed_node_members[collapsed_node].append(child)
 
                 self._traverse_and_collapse(
                     G, H, child, collapsed_node, 
@@ -507,7 +556,9 @@ class MutationGraph():
                 )
 
             else:
-                H.add_node(child, **deepcopy(G.nodes[child]))
+                H.add_node(child)
+
+                self.collapsed_node_members[child] = [child]
 
                 accumulated_mutations = self._concatenate_mutations(
                     path_attributes=path_attributes + [edge_attrs]
@@ -516,8 +567,7 @@ class MutationGraph():
                 H.add_edge(
                     collapsed_node,
                     child,
-                    attributes={'mutations': accumulated_mutations},
-                    contracted_nodes=[]
+                    attributes={'mutations': accumulated_mutations}
                 )
 
                 self._traverse_and_collapse(
@@ -527,28 +577,194 @@ class MutationGraph():
         
         return
 
-    def _aggregate_features(self, feat1, feat2):
+    def _aggregate_node_features(self, G, H):
         """
-        Upon collapsing an edge, aggreggate the features of the two nodes.
-
-        Inputs:
-            feat1 = The first node's attributes.
-
-            feat2 = The second node's attributes.
+        Aggregate and assign node features . A list of
+        chosen node features and their descriptions is included in the report.
         
         Returns:
-            feat_agg = The first and second nodes' features, aggregated.
+            mutation_tree_feat = The mutation tree with node features added.
         """
 
-        # TODO: Implement this method.
+        genotype_groups = self._group_sampled_tips_by_genotype(G)
+
+        for mutation_node, component_nodes in self.collapsed_node_members.items():
+
+            sequences = self._aggregate_sequences(
+                G=G,
+                component_nodes=component_nodes
+            )
+
+            representative = component_nodes[0]
+
+            genotype = self._get_genotype_key(
+                G.nodes[representative]['sequences']
+            )
+
+            genotype_tips = genotype_groups.get(genotype, [])
+
+            H.nodes[mutation_node].update({
+                'sequences': sequences,
+
+                'frequency': self._aggregate_genotype_frequency(
+                    G=G,
+                    tips=genotype_tips
+                ),
+
+                'collection_times': self._aggregate_collection_times(
+                    G=G,
+                    tips=genotype_tips
+                ),
+
+                'clade': self._aggregate_clade(
+                    G=G, 
+                    component_nodes=component_nodes
+                ),
+
+                'lbi': self._recalculate_lbi(
+                    G=G, 
+                    H=H,
+                    component_nodes=component_nodes
+                ),
+
+                'component_nodes': component_nodes
+            })
+
+        return H
+
+    def _group_sampled_tips_by_genotype(self, G):
+        """
+        Group terminal nodes of the phylogenetic tree by amino-acid
+        genotype. Each genotype is identified by its amino-acid 
+        sequences across self.gene_segments.
         
-        feat_agg = feat1
+        Returns:
+            genotype_groups = Dictionary mapping genotype sequences
+            to lists of tip IDs.
+        """
 
-        return feat_agg
+        genotype_groups = {}
 
+        for node in G.nodes:
+
+            if node not in self.sampled_tip_ids:
+                continue
+
+            sequences = G.nodes[node]['sequences']
+            genotype = self._get_genotype_key(sequences)
+
+            genotype_groups.setdefault(genotype, []).append(node)
+        
+        return genotype_groups
+
+    def _get_genotype_key(self, sequences):
+        """
+        Convert the dictionary of sequences into a tuple containing where
+        each entry is one of the dictionary values (actual sequence).
+
+        Inputs:
+            sequences = dictionary containing amino acid/nucleotide seuquences.
+        """
+
+        return tuple(
+            str(sequences[segment])
+            for segment in self.gene_segments
+        )   
+
+    def _aggregate_sequences(self, G, component_nodes):
+        """
+        Retrieve the amino-acid sequences represented by a collapsed
+        mutation-tree node.
+        
+        Inputs:
+            G = Original phylogenetic tree.
+            component_nodes = Original phylogenetic tree nodes which have
+            been collapsed with the zero-mutation edges.
+        """
+
+        if not component_nodes:
+            raise ValueError("component_nodes is empty.")
+
+        representative = component_nodes[0]
+        sequences = G.nodes[representative]['sequences']
+
+        for node in component_nodes[1:]:
+            node_sequences = G.nodes[node]['sequences']
+
+            for segment in self.gene_segments:
+                if sequences[segment] != node_sequences[segment]:
+                    raise ValueError(
+                        f"Collapsed component containing {representative} "
+                        f"and {node} has inconsistent sequences in "
+                        f"segment {segment}."
+                    )
+
+        return {
+            segment: str(sequences[segment])
+            for segment in self.sequence_segments
+        }
+
+    def _aggregate_genotype_frequency(self, G, tips):
+        return
+
+    def _aggregate_collection_times(self, G, tips):
+        """
+        Collect the unique collection dates associated with a genotype.
+        
+        Inputs:
+            G = Pruned phylogenetic tree.
+        
+            tips = Sampled tip IDs belonging to the genotype.
+        
+        Outputs:
+            collection_times = Sorted list of unique collection dates.
+
+        Note that this list will be empty if this genotype has no sampled
+        observations (tips).
+        """
+
+        collection_times = set()
+
+        for tip in tips:
+            num_date = G.nodes[tip].get('attributes', {}).get('num_date')
+
+            if isinstance(num_date, dict):
+                num_date = num_date.get('value')
+
+            if num_date is None:
+                continue
+
+            collection_times.add(float(num_date))
+
+        return sorted(collection_times)
+
+    def _aggregate_clade(self, G, component_nodes):
+        return
+
+    def _recalculate_lbi(self, G, H, component_nodes):
+        """
+        Re-calculate the Local Branching Index for a given node in the
+        mutation tree."""
+        return
+
+    def _get_edge_length(self, G, parent, child):
+        """
+        Use the values of the <div> node attribute to get the edge length
+        in the mutation tree.
+        
+        Note that the edge lengths should be roughly the same as we are
+        collapsing zero-mutation edges. However, we only collapse based
+        on mutations in self.gene_segments, and mutations in other segments
+        are included in <div>.
+        """
+        parent_div = G.nodes[parent]['attributes']['div']
+        child_div = G.nodes[child]['attributes']['div']
+
+        return child_div - parent_div
+        
     def _assign_node_features(self):
         """
-        Assign node features to each node in the mutation graph.
+        Assign node features to each node in the mutation tree.
         """
 
         # TODO: Implement this method.
@@ -557,7 +773,7 @@ class MutationGraph():
 
     def _assign_edge_features(self):
         """
-        Assign edge features to each edge in the graph.
+        Assign edge features to each edge in the tree.
         """
 
         # TODO: Implement this method.
@@ -568,7 +784,7 @@ class MutationGraph():
 
     def write_output(self):
         """
-        Store the mutation graph at the specified location.
+        Store the mutation tree at the specified location.
         """
 
         # TODO: Implement this method.

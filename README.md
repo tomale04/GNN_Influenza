@@ -91,10 +91,28 @@ All regressions use p ∝ b · exp(θᵀz):
 | lbi | LBI (two variants, see §3.2) |
 | mom | momentum: log π(τ_fast) − log π(τ_slow), centred |
 | mlr_mom | allele one-hot (site-alleles with frequency ≥ 0.005) + momentum |
-| **nodereg** | **the GNN's 12 base node features + momentum + LBI** |
+| **nodereg** | **12 base node features (listed below) + momentum (1 column) + LBI (`lbi_leaf`, `lbi_top`)** |
 | full | nodereg + allele one-hot |
 
 π(τ) is the exponentially discounted genotype share over a 5-year lookback. The grid covers (τ_fast, τ_slow) and the base b ∈ {x, π(τ_fast)}.
+
+**The 12 base node features** are features 1–12 of the GNN node-feature table in §3.2, computed for each genotype being forecast.
+Windows are relative to the origin: W0 = Oct 1 (*o*−1) to the cutoff (current season), W1 = the previous Apr–Sep, W2 = the previous Oct–Mar.
+
+| Feature | Meaning |
+|---|---|
+| `freq_W0`, `freq_W1`, `freq_W2` | the genotype's share of all samples in each window |
+| `logc_W0`, `logc_W1`, `logc_W2` | log(1 + the genotype's sample count) in each window |
+| `has_leaves` | the genotype has ≥1 sampled leaf |
+| `yrs_since_first`, `yrs_since_last` | years from its first / latest sample to the cutoff |
+| `rel_depth` | (# AA mutations from the reference − frequency-weighted mean over current genotypes) / 10 |
+| `is_candidate` | the genotype has current-season samples |
+| `is_root` | the genotype is the tree's root |
+
+In the regression these are evaluated only on the genotypes being forecast. For those genotypes, `has_leaves` and
+`is_candidate` are always 1 and `is_root` is almost always 0. Because a constant shift cancels in the softmax, these three
+columns have no effect in the regression. They exist because the GNN uses the same feature set on all nodes, including
+ancestral and unsampled genotypes, where they do vary. In effect, nodereg has 9 informative base features plus momentum and the two LBI columns.
 
 ### 3.2 GNN (`scripts/models/gnn.py`, features in `scripts/hist/views.py`)
 
@@ -146,10 +164,29 @@ fitness g_v = MLP_out(h_v)                    last layer zero-initialised
 
 **Residual + blend.** The GNN is stacked on the regression rather than replacing it:
 ```
-p_reg  = averaged forecast of the regression's top-5 configs
-p_gnn  ∝ p_reg · exp(g)                       g = 0 at init  ->  p_gnn = p_reg at epoch 0
-p      = (1 − w) · p_reg + w · p_gnn
+p_reg   = averaged forecast of the regression's top-5 configs (fixed while the GNN trains)
+p_gnn,v ∝ p_reg,v · exp(g_v)                  g_v = 0 at init  ->  p_gnn = p_reg at epoch 0
+p       = (1 − w) · p_reg + w · p_gnn
 ```
+- **g is not a free parameter.** g_v is the GNN's output for genotype v, i.e. g_v = MLP_out(h_v) above: a function of
+  the tree, the node and edge features, and the GNN's learned weights θ. Training learns θ, not a separate value per
+  genotype, so the same weights produce g for every genotype in every tree, including test trees.
+- **Why exp(g) multiplies p_reg.** Since p_reg,v ∝ b_v · exp(θ_regᵀ z_v), we get p_reg,v · exp(g_v) ∝ b_v · exp(θ_regᵀ z_v + g_v).
+  This is the same Malthusian growth model as the regression, on the same base measure b, with total fitness =
+  regression fitness + GNN correction g. In log space, g is an additive residual on the regression's log-probabilities.
+  exp(·) keeps the forecast positive and normalisable without constraints, and exp(g_v) reads as the fold change in
+  genotype v's predicted share relative to the regression. Strictly, p_reg averages 5 configurations, so the identity
+  holds per configuration rather than exactly for the average.
+- **Why build on the regression instead of p ∝ x · exp(g).** The plain GNNs (§4.2), which started from naive frequencies, never
+  clearly beat naive: they had to relearn by early-stopped SGD what the convex, regularised regression already captures.
+  Stacking the GNN on the regression leaves it only the residual signal, and g = 0 / epoch 0 recovers the regression exactly.
+- **Known limitations of this stacking:**
+  - It's two-stage. The regression is fit first and frozen; a joint fit of θ_reg and the GNN could do better.
+  - Offsets on training pairs are in-sample: p_reg was fit on those same pairs, so the residuals the GNN trains on are
+    smaller than those it meets on validation and test. Cross-fitting the offsets would fix this.
+- Only the GNN's weights θ are trained here. The regression's coefficients are fit beforehand and held fixed, and p_reg
+  enters only as an offset. The blend weight w and the epoch count are not trained by gradient descent; they're chosen
+  on validation (see Selection below).
 - Training: AdamW (lr 1e-3, weight decay 1e-2), full batch over all training views, cross-entropy against the nearest-neighbour targets.
   Each season pair is weighted equally. The model is an ensemble of 5 seeds, averaging g.
 - Selection: (epoch e ∈ {0, 10, …, 150}, w ∈ {0, 0.1, …, 1}) minimises mean validation Wasserstein distance over all validation pairs.
@@ -239,7 +276,6 @@ Requirements: Python 3.9, numpy, scipy, pandas, torch, biopython. Results are wr
 
 ## 8. Layout
 ```
-v0/                        previous contents of this repository (exploration notebook, July snapshots, flag reports), kept as-is
 data/nextstrain_trees/     raw April-1 Nextstrain JSONs + manifest
 data/mutation_trees/       HA1+HA2 AA mutation trees, references, summary
 data/annotations/          epitope / Koel / Caton site lists (+ source configs)

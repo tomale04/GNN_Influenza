@@ -1,0 +1,12 @@
+  pooled_bio_K4 T=2022 h3n2+h1n1pdm: e*=123 valCE=2.174 (naive 2.692) valEMD=7.821 test=[10.347, 6.935]
+  pooled_bio_K4 T=2023 h3n2+h1n1pdm: e*=34 valCE=2.228 (naive 2.393) valEMD=9.096 test=[5.752, 11.512]
+  pooled_bio_K4 T=2024 h3n2+h1n1pdm: e*=0 valCE=3.793 (naive 3.793) valEMD=8.608 test=[9.351, 5.62]
+  pooled_bio_K4 T=2025 h3n2+h1n1pdm: e*=35 valCE=2.786 (naive 2.865) valEMD=7.101 test=[4.699, 5.71]
+  pooled_bio_K4 T=2026 h3n2+h1n1pdm: e*=18 valCE=3.301 (naive 3.306) valEMD=5.355 test=[10.923, 13.895]
+pooled_bio_K4: mean test EMD 8.475 (118s)
+  pooled_bio_K0 T=2022 h3n2+h1n1pdm: e*=57 valCE=2.255 (naive 2.692) valEMD=9.011 test=[11.297, 7.553]
+  pooled_bio_K0 T=2023 h3n2+h1n1pdm: e*=0 valCE=2.393 (naive 2.393) valEMD=9.195 test=[5.826, 11.39]
+  pooled_bio_K0 T=2024 h3n2+h1n1pdm: e*=0 valCE=3.793 (naive 3.793) valEMD=8.608 test=[9.351, 5.62]
+  pooled_bio_K0 T=2025 h3n2+h1n1pdm: e*=47 valCE=2.798 (naive 2.865) valEMD=7.112 test=[4.71, 5.41]
+  pooled_bio_K0 T=2026 h3n2+h1n1pdm: e*=10 valCE=3.306 (naive 3.306) valEMD=5.380 test=[10.944, 13.863]
+pooled_bio_K0: mean test EMD 8.597 (10s)

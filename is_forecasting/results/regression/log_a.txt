@@ -1,0 +1,22 @@
+  nestar_pooled T=2023 h3n2 val=11.062 test=[5.61]
+  nestar_pooled T=2024 h3n2 val=8.304 test=[8.391]
+  nestar_pooled T=2025 h3n2 val=8.235 test=[4.34]
+  nestar_pooled T=2026 h3n2 val=5.960 test=[10.474]
+nestar_pooled: mean test EMD 7.204 over 4 pairs
+  mlr_mom_pooled T=2022 h3n2+h1n1pdm val=9.221 test=[9.629, 6.736]
+  mlr_mom_pooled T=2023 h3n2+h1n1pdm val=8.648 test=[5.624, 11.779]
+  mlr_mom_pooled T=2024 h3n2+h1n1pdm val=8.535 test=[9.687, 5.343]
+  mlr_mom_pooled T=2025 h3n2+h1n1pdm val=7.805 test=[3.866, 5.133]
+  mlr_mom_pooled T=2026 h3n2+h1n1pdm val=6.494 test=[10.682, 15.504]
+mlr_mom_pooled: mean test EMD 8.398 over 10 pairs
+  mlr_mom_persub T=2022 h3n2 val=11.437 test=[10.059]
+  mlr_mom_persub T=2022 h1n1pdm val=4.387 test=[6.596]
+  mlr_mom_persub T=2023 h3n2 val=10.748 test=[5.641]
+  mlr_mom_persub T=2023 h1n1pdm val=5.484 test=[12.114]
+  mlr_mom_persub T=2024 h3n2 val=9.044 test=[9.245]
+  mlr_mom_persub T=2024 h1n1pdm val=7.445 test=[5.23]
+  mlr_mom_persub T=2025 h3n2 val=7.949 test=[3.855]
+  mlr_mom_persub T=2025 h1n1pdm val=7.419 test=[4.806]
+  mlr_mom_persub T=2026 h3n2 val=5.675 test=[10.732]
+  mlr_mom_persub T=2026 h1n1pdm val=6.845 test=[15.513]
+mlr_mom_persub: mean test EMD 8.379 over 10 pairs

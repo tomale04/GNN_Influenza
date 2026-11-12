@@ -1,0 +1,11 @@
+  persub_bioseq_K0 T=2022 h3n2: e*=0 valCE=3.329 (naive 3.329) valEMD=14.255 test=[11.92]
+  persub_bioseq_K0 T=2022 h1n1pdm: e*=59 valCE=0.975 (naive 2.055) valEMD=2.985 test=[7.516]
+  persub_bioseq_K0 T=2023 h3n2: e*=82 valCE=1.878 (naive 2.232) valEMD=10.293 test=[5.818]
+  persub_bioseq_K0 T=2023 h1n1pdm: e*=0 valCE=2.555 (naive 2.555) valEMD=6.469 test=[11.39]
+  persub_bioseq_K0 T=2024 h3n2: e*=1 valCE=3.511 (naive 3.511) valEMD=5.825 test=[9.348]
+  persub_bioseq_K0 T=2024 h1n1pdm: e*=126 valCE=3.732 (naive 4.076) valEMD=6.753 test=[4.652]
+  persub_bioseq_K0 T=2025 h3n2: e*=0 valCE=3.477 (naive 3.477) valEMD=9.351 test=[4.845]
+  persub_bioseq_K0 T=2025 h1n1pdm: e*=48 valCE=2.127 (naive 2.252) valEMD=4.720 test=[5.669]
+  persub_bioseq_K0 T=2026 h3n2: e*=85 valCE=3.023 (naive 3.150) valEMD=4.246 test=[10.756]
+  persub_bioseq_K0 T=2026 h1n1pdm: e*=0 valCE=3.462 (naive 3.462) valEMD=5.947 test=[13.862]
+persub_bioseq_K0: mean test EMD 8.577 (864s)

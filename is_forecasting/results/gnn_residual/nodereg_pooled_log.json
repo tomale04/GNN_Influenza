@@ -1,0 +1,72 @@
+[
+ {
+  "T": 2022,
+  "K": 4,
+  "e_star": 131,
+  "val_dCE_at_estar": -0.21276545524597168,
+  "n_folds": 1
+ },
+ {
+  "T": 2022,
+  "K": 0,
+  "e_star": 9,
+  "val_dCE_at_estar": -0.0011453628540039062,
+  "n_folds": 1
+ },
+ {
+  "T": 2023,
+  "K": 4,
+  "e_star": 89,
+  "val_dCE_at_estar": -0.18938970565795898,
+  "n_folds": 2
+ },
+ {
+  "T": 2023,
+  "K": 0,
+  "e_star": 0,
+  "val_dCE_at_estar": 0.0,
+  "n_folds": 2
+ },
+ {
+  "T": 2024,
+  "K": 4,
+  "e_star": 85,
+  "val_dCE_at_estar": -0.19158077239990234,
+  "n_folds": 3
+ },
+ {
+  "T": 2024,
+  "K": 0,
+  "e_star": 0,
+  "val_dCE_at_estar": 0.0,
+  "n_folds": 3
+ },
+ {
+  "T": 2025,
+  "K": 4,
+  "e_star": 150,
+  "val_dCE_at_estar": -0.15547426541646323,
+  "n_folds": 3
+ },
+ {
+  "T": 2025,
+  "K": 0,
+  "e_star": 0,
+  "val_dCE_at_estar": 0.0,
+  "n_folds": 3
+ },
+ {
+  "T": 2026,
+  "K": 4,
+  "e_star": 125,
+  "val_dCE_at_estar": -0.0863967736562093,
+  "n_folds": 3
+ },
+ {
+  "T": 2026,
+  "K": 0,
+  "e_star": 148,
+  "val_dCE_at_estar": -0.0453492005666097,
+  "n_folds": 3
+ }
+]

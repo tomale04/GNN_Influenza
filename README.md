@@ -239,6 +239,7 @@ Requirements: Python 3.9, numpy, scipy, pandas, torch, biopython. Results are wr
 
 ## 8. Layout
 ```
+v0/                        previous contents of this repository (exploration notebook, July snapshots, flag reports), kept as-is
 data/nextstrain_trees/     raw April-1 Nextstrain JSONs + manifest
 data/mutation_trees/       HA1+HA2 AA mutation trees, references, summary
 data/annotations/          epitope / Koel / Caton site lists (+ source configs)

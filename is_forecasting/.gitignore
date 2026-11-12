@@ -1,7 +1,0 @@
-# Re-include this project's results (the repo-level .gitignore ignores results/ everywhere);
-# they back the numbers in README.md.
-!results/
-# Large / regenerable data, not committed:
-data/nextstrain_trees/
-data/graph_cache/
-__pycache__/

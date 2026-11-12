@@ -1,0 +1,6 @@
+  pooled_bioseq_K4 T=2022 h3n2+h1n1pdm: e*=60 valCE=2.496 (naive 2.692) valEMD=8.549 test=[11.221, 6.323]
+  pooled_bioseq_K4 T=2023 h3n2+h1n1pdm: e*=111 valCE=1.643 (naive 2.393) valEMD=7.722 test=[5.717, 11.164]
+  pooled_bioseq_K4 T=2024 h3n2+h1n1pdm: e*=2 valCE=3.792 (naive 3.793) valEMD=8.608 test=[9.344, 5.584]
+  pooled_bioseq_K4 T=2025 h3n2+h1n1pdm: e*=36 valCE=2.834 (naive 2.865) valEMD=7.119 test=[4.533, 6.327]
+  pooled_bioseq_K4 T=2026 h3n2+h1n1pdm: e*=18 valCE=3.303 (naive 3.306) valEMD=5.453 test=[10.886, 14.103]
+pooled_bioseq_K4: mean test EMD 8.520 (957s)

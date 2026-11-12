@@ -1,0 +1,12 @@
+  pooled_emb_K4 T=2022 h3n2+h1n1pdm: e*=90 val=6.983 test=[6.515, 7.827]
+  pooled_emb_K4 T=2023 h3n2+h1n1pdm: e*=80 val=6.614 test=[8.305, 13.526]
+  pooled_emb_K4 T=2024 h3n2+h1n1pdm: e*=10 val=8.765 test=[8.466, 5.178]
+  pooled_emb_K4 T=2025 h3n2+h1n1pdm: e*=80 val=6.522 test=[5.092, 3.97]
+  pooled_emb_K4 T=2026 h3n2+h1n1pdm: e*=180 val=4.647 test=[11.345, 15.665]
+pooled_emb_K4: mean test EMD 8.589 (377s)
+  pooled_both_K4 T=2022 h3n2+h1n1pdm: e*=70 val=6.750 test=[5.951, 7.363]
+  pooled_both_K4 T=2023 h3n2+h1n1pdm: e*=50 val=6.653 test=[7.442, 12.092]
+  pooled_both_K4 T=2024 h3n2+h1n1pdm: e*=10 val=8.740 test=[8.533, 5.207]
+  pooled_both_K4 T=2025 h3n2+h1n1pdm: e*=60 val=6.344 test=[3.499, 7.126]
+  pooled_both_K4 T=2026 h3n2+h1n1pdm: e*=90 val=3.679 test=[10.436, 15.274]
+pooled_both_K4: mean test EMD 8.292 (315s)

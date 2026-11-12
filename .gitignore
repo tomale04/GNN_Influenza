@@ -1,11 +1,10 @@
+# Python / editor
 .venv/
 __pycache__/
-.ipynb_checkpoints/
-
-data/raw/
-data/processed/
-data/graphs/
-
-results/
 *.pyc
+.ipynb_checkpoints/
 .DS_Store
+
+# Large / regenerable data (re-download with scripts/download_trees.py; graph cache is rebuilt automatically)
+data/nextstrain_trees/
+data/graph_cache/

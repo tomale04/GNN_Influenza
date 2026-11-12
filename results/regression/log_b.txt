@@ -1,0 +1,17 @@
+  nodereg_pooled T=2022 h3n2+h1n1pdm val=8.558 test=[10.645, 7.674]
+  nodereg_pooled T=2023 h3n2+h1n1pdm val=8.839 test=[5.993, 8.789]
+  nodereg_pooled T=2024 h3n2+h1n1pdm val=8.295 test=[6.54, 4.367]
+  nodereg_pooled T=2025 h3n2+h1n1pdm val=6.559 test=[5.2, 6.182]
+  nodereg_pooled T=2026 h3n2+h1n1pdm val=5.888 test=[10.851, 12.994]
+nodereg_pooled: mean test EMD 7.923 over 10 pairs
+  nodereg_persub T=2022 h3n2 val=10.879 test=[9.442]
+  nodereg_persub T=2022 h1n1pdm val=2.791 test=[7.645]
+  nodereg_persub T=2023 h3n2 val=10.097 test=[7.04]
+  nodereg_persub T=2023 h1n1pdm val=5.223 test=[8.51]
+  nodereg_persub T=2024 h3n2 val=9.080 test=[10.362]
+  nodereg_persub T=2024 h1n1pdm val=5.263 test=[3.631]
+  nodereg_persub T=2025 h3n2 val=8.177 test=[4.92]
+  nodereg_persub T=2025 h1n1pdm val=5.230 test=[6.155]
+  nodereg_persub T=2026 h3n2 val=6.402 test=[10.924]
+  nodereg_persub T=2026 h1n1pdm val=4.706 test=[13.234]
+nodereg_persub: mean test EMD 8.186 over 10 pairs

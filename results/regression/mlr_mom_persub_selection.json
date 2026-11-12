@@ -1,0 +1,542 @@
+[
+ {
+  "T": 2022,
+  "subtypes": [
+   "h3n2"
+  ],
+  "val_emd": 11.43691022316366,
+  "top": [
+   {
+    "tau": [
+     0.5,
+     2.0
+    ],
+    "lam_allele": 0.01,
+    "lam_feat": 0.1,
+    "base": "x"
+   },
+   {
+    "tau": [
+     0.25,
+     2.0
+    ],
+    "lam_allele": 0.01,
+    "lam_feat": 0.1,
+    "base": "x"
+   },
+   {
+    "tau": [
+     0.25,
+     1.0
+    ],
+    "lam_allele": 0.01,
+    "lam_feat": 0.1,
+    "base": "x"
+   },
+   {
+    "tau": [
+     0.5,
+     2.0
+    ],
+    "lam_allele": 0.01,
+    "lam_feat": 0.01,
+    "base": "x"
+   },
+   {
+    "tau": [
+     0.25,
+     1.0
+    ],
+    "lam_allele": 0.01,
+    "lam_feat": 0.01,
+    "base": "x"
+   }
+  ]
+ },
+ {
+  "T": 2022,
+  "subtypes": [
+   "h1n1pdm"
+  ],
+  "val_emd": 4.386845112485994,
+  "top": [
+   {
+    "tau": [
+     0.25,
+     1.0
+    ],
+    "lam_allele": 1.0,
+    "lam_feat": 0.1,
+    "base": "pi"
+   },
+   {
+    "tau": [
+     0.25,
+     2.0
+    ],
+    "lam_allele": 1.0,
+    "lam_feat": 0.1,
+    "base": "pi"
+   },
+   {
+    "tau": [
+     0.25,
+     1.0
+    ],
+    "lam_allele": 1.0,
+    "lam_feat": 0.01,
+    "base": "pi"
+   },
+   {
+    "tau": [
+     0.25,
+     1.0
+    ],
+    "lam_allele": 1.0,
+    "lam_feat": 0.001,
+    "base": "pi"
+   },
+   {
+    "tau": [
+     0.25,
+     2.0
+    ],
+    "lam_allele": 1.0,
+    "lam_feat": 0.01,
+    "base": "pi"
+   }
+  ]
+ },
+ {
+  "T": 2023,
+  "subtypes": [
+   "h3n2"
+  ],
+  "val_emd": 10.747749222541522,
+  "top": [
+   {
+    "tau": [
+     0.25,
+     1.0
+    ],
+    "lam_allele": 0.01,
+    "lam_feat": 0.01,
+    "base": "x"
+   },
+   {
+    "tau": [
+     0.25,
+     1.0
+    ],
+    "lam_allele": 0.01,
+    "lam_feat": 0.001,
+    "base": "x"
+   },
+   {
+    "tau": [
+     0.25,
+     1.0
+    ],
+    "lam_allele": 0.01,
+    "lam_feat": 0.1,
+    "base": "x"
+   },
+   {
+    "tau": [
+     0.25,
+     2.0
+    ],
+    "lam_allele": 0.01,
+    "lam_feat": 0.01,
+    "base": "x"
+   },
+   {
+    "tau": [
+     0.25,
+     2.0
+    ],
+    "lam_allele": 0.01,
+    "lam_feat": 0.1,
+    "base": "x"
+   }
+  ]
+ },
+ {
+  "T": 2023,
+  "subtypes": [
+   "h1n1pdm"
+  ],
+  "val_emd": 5.484388184823036,
+  "top": [
+   {
+    "tau": [
+     0.25,
+     1.0
+    ],
+    "lam_allele": 1.0,
+    "lam_feat": 0.1,
+    "base": "pi"
+   },
+   {
+    "tau": [
+     0.25,
+     2.0
+    ],
+    "lam_allele": 1.0,
+    "lam_feat": 0.1,
+    "base": "pi"
+   },
+   {
+    "tau": [
+     0.25,
+     1.0
+    ],
+    "lam_allele": 1.0,
+    "lam_feat": 0.01,
+    "base": "pi"
+   },
+   {
+    "tau": [
+     0.25,
+     1.0
+    ],
+    "lam_allele": 1.0,
+    "lam_feat": 0.001,
+    "base": "pi"
+   },
+   {
+    "tau": [
+     0.25,
+     2.0
+    ],
+    "lam_allele": 1.0,
+    "lam_feat": 0.01,
+    "base": "pi"
+   }
+  ]
+ },
+ {
+  "T": 2024,
+  "subtypes": [
+   "h3n2"
+  ],
+  "val_emd": 9.044239831537572,
+  "top": [
+   {
+    "tau": [
+     0.25,
+     1.0
+    ],
+    "lam_allele": 0.01,
+    "lam_feat": 0.1,
+    "base": "x"
+   },
+   {
+    "tau": [
+     0.25,
+     2.0
+    ],
+    "lam_allele": 0.01,
+    "lam_feat": 0.1,
+    "base": "x"
+   },
+   {
+    "tau": [
+     0.5,
+     2.0
+    ],
+    "lam_allele": 0.01,
+    "lam_feat": 0.1,
+    "base": "x"
+   },
+   {
+    "tau": [
+     0.25,
+     1.0
+    ],
+    "lam_allele": 0.01,
+    "lam_feat": 0.01,
+    "base": "x"
+   },
+   {
+    "tau": [
+     0.25,
+     2.0
+    ],
+    "lam_allele": 0.01,
+    "lam_feat": 0.01,
+    "base": "x"
+   }
+  ]
+ },
+ {
+  "T": 2024,
+  "subtypes": [
+   "h1n1pdm"
+  ],
+  "val_emd": 7.445381110780725,
+  "top": [
+   {
+    "tau": [
+     0.5,
+     2.0
+    ],
+    "lam_allele": 1.0,
+    "lam_feat": 0.1,
+    "base": "x"
+   },
+   {
+    "tau": [
+     0.5,
+     2.0
+    ],
+    "lam_allele": 1.0,
+    "lam_feat": 0.01,
+    "base": "x"
+   },
+   {
+    "tau": [
+     0.5,
+     2.0
+    ],
+    "lam_allele": 1.0,
+    "lam_feat": 0.001,
+    "base": "x"
+   },
+   {
+    "tau": [
+     0.5,
+     2.0
+    ],
+    "lam_allele": 0.1,
+    "lam_feat": 0.001,
+    "base": "x"
+   },
+   {
+    "tau": [
+     0.5,
+     2.0
+    ],
+    "lam_allele": 10.0,
+    "lam_feat": 0.1,
+    "base": "x"
+   }
+  ]
+ },
+ {
+  "T": 2025,
+  "subtypes": [
+   "h3n2"
+  ],
+  "val_emd": 7.948624503222912,
+  "top": [
+   {
+    "tau": [
+     0.25,
+     2.0
+    ],
+    "lam_allele": 0.1,
+    "lam_feat": 0.1,
+    "base": "pi"
+   },
+   {
+    "tau": [
+     0.25,
+     2.0
+    ],
+    "lam_allele": 0.1,
+    "lam_feat": 0.01,
+    "base": "pi"
+   },
+   {
+    "tau": [
+     0.25,
+     2.0
+    ],
+    "lam_allele": 0.1,
+    "lam_feat": 0.001,
+    "base": "pi"
+   },
+   {
+    "tau": [
+     0.25,
+     1.0
+    ],
+    "lam_allele": 0.1,
+    "lam_feat": 0.1,
+    "base": "pi"
+   },
+   {
+    "tau": [
+     0.25,
+     1.0
+    ],
+    "lam_allele": 0.1,
+    "lam_feat": 0.01,
+    "base": "pi"
+   }
+  ]
+ },
+ {
+  "T": 2025,
+  "subtypes": [
+   "h1n1pdm"
+  ],
+  "val_emd": 7.419189538786487,
+  "top": [
+   {
+    "tau": [
+     0.5,
+     2.0
+    ],
+    "lam_allele": 0.01,
+    "lam_feat": 0.001,
+    "base": "pi"
+   },
+   {
+    "tau": [
+     0.5,
+     2.0
+    ],
+    "lam_allele": 0.01,
+    "lam_feat": 0.01,
+    "base": "pi"
+   },
+   {
+    "tau": [
+     0.5,
+     2.0
+    ],
+    "lam_allele": 0.1,
+    "lam_feat": 0.001,
+    "base": "x"
+   },
+   {
+    "tau": [
+     0.5,
+     2.0
+    ],
+    "lam_allele": 0.1,
+    "lam_feat": 0.01,
+    "base": "x"
+   },
+   {
+    "tau": [
+     0.5,
+     2.0
+    ],
+    "lam_allele": 0.01,
+    "lam_feat": 0.001,
+    "base": "x"
+   }
+  ]
+ },
+ {
+  "T": 2026,
+  "subtypes": [
+   "h3n2"
+  ],
+  "val_emd": 5.675401480542302,
+  "top": [
+   {
+    "tau": [
+     0.25,
+     2.0
+    ],
+    "lam_allele": 0.01,
+    "lam_feat": 0.1,
+    "base": "pi"
+   },
+   {
+    "tau": [
+     0.25,
+     1.0
+    ],
+    "lam_allele": 0.01,
+    "lam_feat": 0.1,
+    "base": "pi"
+   },
+   {
+    "tau": [
+     0.25,
+     2.0
+    ],
+    "lam_allele": 0.01,
+    "lam_feat": 0.01,
+    "base": "pi"
+   },
+   {
+    "tau": [
+     0.5,
+     2.0
+    ],
+    "lam_allele": 0.01,
+    "lam_feat": 0.1,
+    "base": "pi"
+   },
+   {
+    "tau": [
+     0.5,
+     2.0
+    ],
+    "lam_allele": 0.01,
+    "lam_feat": 0.01,
+    "base": "pi"
+   }
+  ]
+ },
+ {
+  "T": 2026,
+  "subtypes": [
+   "h1n1pdm"
+  ],
+  "val_emd": 6.845361383664792,
+  "top": [
+   {
+    "tau": [
+     0.5,
+     2.0
+    ],
+    "lam_allele": 0.1,
+    "lam_feat": 0.001,
+    "base": "x"
+   },
+   {
+    "tau": [
+     0.5,
+     2.0
+    ],
+    "lam_allele": 0.1,
+    "lam_feat": 0.01,
+    "base": "x"
+   },
+   {
+    "tau": [
+     0.5,
+     2.0
+    ],
+    "lam_allele": 0.01,
+    "lam_feat": 0.001,
+    "base": "x"
+   },
+   {
+    "tau": [
+     0.5,
+     2.0
+    ],
+    "lam_allele": 0.01,
+    "lam_feat": 0.001,
+    "base": "pi"
+   },
+   {
+    "tau": [
+     0.5,
+     2.0
+    ],
+    "lam_allele": 0.01,
+    "lam_feat": 0.01,
+    "base": "pi"
+   }
+  ]
+ }
+]

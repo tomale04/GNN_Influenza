@@ -1,0 +1,8 @@
+T=2022 train views 19 val origins [2020, 2019, 2018, 2017, 2016, 2015] | nodereg:10.65 nodereg:6.90 nodereg+gnnblend_K0:10.51 nodereg+gnnblend_K0:7.01 | K0 e*=150 w*=0.9 (32s)
+T=2023 train views 20 val origins [2021, 2020, 2019, 2018, 2017, 2016] | nodereg:5.82 nodereg:9.50 nodereg+gnnblend_K0:5.93 nodereg+gnnblend_K0:8.61 | K0 e*=140 w*=1.0 (34s)
+T=2024 train views 17 val origins [2022, 2021, 2020, 2019, 2018, 2017] | nodereg:7.90 nodereg:4.22 nodereg+gnnblend_K0:7.95 nodereg+gnnblend_K0:4.39 | K0 e*=150 w*=1.0 (20s)
+T=2025 train views 17 val origins [2023, 2022, 2021, 2020, 2019, 2018] | nodereg:4.72 nodereg:5.61 nodereg+gnnblend_K0:4.73 nodereg+gnnblend_K0:5.50 | K0 e*=150 w*=1.0 (20s)
+T=2026 train views 17 val origins [2024, 2023, 2022, 2021, 2020, 2019] | nodereg:11.13 nodereg:13.05 nodereg+gnnblend_K0:11.10 nodereg+gnnblend_K0:12.93 | K0 e*=150 w*=1.0 (19s)
+model
+hist_nodereg                7.950
+hist_nodereg+gnnblend_K0    7.865
